@@ -1,0 +1,75 @@
+# 전체 스택을 한 번에 띄운다: postgres, redis, api, judge, web
+#   docker compose up --build
+#   docker compose run --rm api sh -c "cd ../../packages/db && pnpm migrate && pnpm seed"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cote
+      POSTGRES_PASSWORD: cote
+      POSTGRES_DB: cote
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cote"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://cote:cote@postgres:5432/cote
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      WEB_ORIGIN: http://localhost:3000
+      API_PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  judge:
+    build:
+      context: .
+      dockerfile: apps/judge/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://cote:cote@postgres:5432/cote
+      REDIS_URL: redis://redis:6379
+      JUDGE_EXECUTOR: docker
+      JUDGE_CONCURRENCY: 2
+      # docker 모드는 호스트 경로를 컨테이너에 마운트하므로 호스트에서 접근 가능한 경로여야 한다
+      JUDGE_WORKDIR: /judge-tmp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/cote-judge:/judge-tmp
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

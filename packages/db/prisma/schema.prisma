@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  nickname     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  submissions Submission[]
+  reviewNotes ReviewNote[]
+}
+
+model Problem {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  title         String
+  body          String
+  difficulty    Int // 1~5
+  timeLimitMs   Int      @default(2000)
+  memoryLimitMb Int      @default(256)
+  isPublic      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  tags        ProblemTag[]
+  testCases   TestCase[]
+  submissions Submission[]
+  reviewNotes ReviewNote[]
+}
+
+model ProblemTag {
+  problemId Int
+  tag       String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@id([problemId, tag])
+  @@index([tag])
+}
+
+model TestCase {
+  id        Int     @id @default(autoincrement())
+  problemId Int
+  order     Int
+  input     String
+  output    String
+  isSample  Boolean @default(false)
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  results SubmissionResult[]
+
+  @@unique([problemId, order])
+}
+
+enum Language {
+  PYTHON
+  JAVASCRIPT
+  CPP
+  JAVA
+}
+
+enum SubmissionKind {
+  RUN // 예제 실행: 샘플 테스트케이스만, 통계·오답노트에 반영하지 않음
+  SUBMIT // 최종 제출
+}
+
+enum Verdict {
+  PENDING
+  JUDGING
+  AC
+  WA
+  TLE
+  MLE
+  RE
+  CE
+  IE // internal error
+}
+
+model Submission {
+  id           String         @id @default(cuid())
+  userId       String
+  problemId    Int
+  kind         SubmissionKind @default(SUBMIT)
+  language     Language
+  code         String
+  status       Verdict        @default(PENDING)
+  execTimeMs   Int?
+  memoryKb     Int?
+  compileLog   String?
+  passedCount  Int            @default(0)
+  totalCount   Int            @default(0)
+  createdAt    DateTime       @default(now())
+  judgedAt     DateTime?
+
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem            @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  results SubmissionResult[]
+
+  @@index([userId, createdAt])
+  @@index([problemId, userId])
+}
+
+model SubmissionResult {
+  submissionId String
+  testCaseId   Int
+  verdict      Verdict
+  execTimeMs   Int?
+  memoryKb     Int?
+  stdout       String? // RUN(예제 실행)일 때만 저장, 앞부분만
+  stderr       String?
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  testCase   TestCase   @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  @@id([submissionId, testCaseId])
+}
+
+enum ReviewState {
+  TODO // 틀린 뒤 아직 재도전하지 않음
+  REVIEWING // 재도전 중(여전히 미해결)
+  DONE // 재도전하여 AC
+}
+
+model ReviewNote {
+  id           String      @id @default(cuid())
+  userId       String
+  problemId    Int
+  memo         String      @default("")
+  state        ReviewState @default(TODO)
+  failCount    Int         @default(1)
+  reviewCount  Int         @default(0)
+  nextReviewAt DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+  @@index([userId, state, nextReviewAt])
+}

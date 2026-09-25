@@ -1,0 +1,22 @@
+{
+  "name": "@cote/judge",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node --transpile-only src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "ts-node --transpile-only src/judge.spec.ts"
+  },
+  "dependencies": {
+    "@cote/db": "workspace:*",
+    "bullmq": "^5.58.0",
+    "dotenv": "^16.4.7",
+    "ioredis": "^5.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
