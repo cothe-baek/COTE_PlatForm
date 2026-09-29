@@ -42,5 +42,15 @@ React + TypeScript + Vite + [Ant Design](https://ant.design/) 프로젝트입니
 | `AsyncButton` | `onClick`이 Promise를 돌려주면 끝날 때까지 자동으로 로딩을 표시하는 버튼 |
 | `ResultTag` | 채점 결과(`accepted`, `wrong`, `timeout`, `judging`)를 색과 아이콘이 붙은 태그로 표시 |
 | `CodeBlock` | 코드를 고정폭 글꼴과 어두운 배경으로 표시 |
+| `ProblemCard` | 문제 목록의 카드. 난이도, 제목, 알고리즘 분류, 완료 인원, 정답률, 풀이 상태를 표시 |
+| `LevelTag` | 난이도(Lv. 1~5)를 색깔 태그로 표시 |
+| `CodeEditorPanel` | 언어 선택, 코드 에디터(CodeMirror), 실행 결과, 초기화/실행/제출 버튼을 묶은 풀이 패널 |
+
+## 화면과 예제 데이터
+
+- `src/pages/ProblemListPage.tsx`: 문제 목록
+- `src/pages/ProblemSolvePage.tsx`: 문제 설명과 코드 에디터가 나란히 있는 풀이 화면
+- `src/data/problems.ts`: 예제 문제. 함수 모양(`params`, `returns`)만 적으면 언어별 시작 코드가 만들어집니다.
+- `src/data/mockJudge.ts`: 채점 서버가 없을 때 쓰는 가짜 실행/채점. 시작 코드를 그대로 내면 오답, 고치면 정답으로 처리합니다. 서버가 생기면 이 부분만 실제 API 호출로 바꾸면 됩니다.
 
 아이콘은 [`@ant-design/icons`](https://ant.design/components/icon)에서 가져다 씁니다.

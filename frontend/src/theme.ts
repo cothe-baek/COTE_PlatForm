@@ -20,9 +20,6 @@ const components: ThemeConfig['components'] = {
     primaryShadow: '0 6px 16px rgba(79, 91, 245, 0.28)',
     fontWeight: 600,
   },
-  Steps: {
-    iconSize: 28,
-  },
 };
 
 export const lightTheme: ThemeConfig = {
