@@ -3,8 +3,6 @@ import { Layout, Segmented, Typography, theme } from 'antd'
 import { problems } from './data/problems'
 import { ProblemListPage } from './pages/ProblemListPage'
 import { ProblemSolvePage } from './pages/ProblemSolvePage'
-import { MobileApp } from './pages/mobile/MobileApp'
-import { useIsMobile } from './useIsMobile'
 
 const { Header, Content } = Layout
 
@@ -17,11 +15,6 @@ function App({ isDark, onChangeTheme }: AppProps) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const { token } = theme.useToken()
   const selected = problems.find((problem) => problem.id === selectedId)
-  const isMobile = useIsMobile()
-
-  if (isMobile) {
-    return <MobileApp isDark={isDark} onChangeTheme={onChangeTheme} />
-  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
