@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { Button, Card, Flex, Layout, Segmented, Space, Steps, Tag, Typography, theme } from 'antd'
+import { Button, Card, Flex, Layout, Segmented, Space, Steps, Typography, theme } from 'antd'
+import { PlayCircleOutlined, SendOutlined } from '@ant-design/icons'
+import { AsyncButton, CodeBlock, ResultTag } from './components'
+import type { JudgeResult } from './components'
 
 const { Header, Content } = Layout
 
@@ -14,6 +17,9 @@ const sampleCode = `def solution(numbers, target):
     answer = 0
     return answer`
 
+// 서버 요청 대신 잠시 기다리는 가짜 작업.
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 type AppProps = {
   isDark: boolean
   onChangeTheme: (dark: boolean) => void
@@ -21,6 +27,13 @@ type AppProps = {
 
 function App({ isDark, onChangeTheme }: AppProps) {
   const [current, setCurrent] = useState(0)
+  const [result, setResult] = useState<JudgeResult | null>(null)
+
+  const submit = async () => {
+    setResult('judging')
+    await wait(2000)
+    setResult('accepted')
+  }
   const { token } = theme.useToken()
 
   return (
@@ -67,27 +80,38 @@ function App({ isDark, onChangeTheme }: AppProps) {
           </Card>
 
           <Card variant="borderless" style={{ boxShadow: token.boxShadowTertiary }} title="코드 블록">
-            <pre
-              style={{
-                margin: 0,
-                padding: token.padding,
-                borderRadius: token.borderRadius,
-                background: token.colorFillAlter,
-                fontFamily: token.fontFamilyCode,
-                fontSize: token.fontSizeSM,
-                overflowX: 'auto',
-              }}
-            >
-              {sampleCode}
-            </pre>
+            <CodeBlock code={sampleCode} />
+          </Card>
+
+          <Card variant="borderless" style={{ boxShadow: token.boxShadowTertiary }} title="버튼">
+            <Flex vertical gap="middle">
+              <Space wrap>
+                <AsyncButton icon={<PlayCircleOutlined />} onClick={() => wait(1500)}>
+                  코드 실행
+                </AsyncButton>
+                <AsyncButton type="primary" icon={<SendOutlined />} onClick={submit}>
+                  제출 후 채점하기
+                </AsyncButton>
+                {result && <ResultTag result={result} />}
+              </Space>
+              <Space wrap>
+                <Button type="primary" loading>
+                  로딩 중
+                </Button>
+                <Button loading>로딩 중</Button>
+                <Button type="primary" size="small" loading>
+                  작은 버튼
+                </Button>
+              </Space>
+            </Flex>
           </Card>
 
           <Card variant="borderless" style={{ boxShadow: token.boxShadowTertiary }} title="채점 결과 태그">
             <Space wrap>
-              <Tag color="success">정답</Tag>
-              <Tag color="error">오답</Tag>
-              <Tag color="warning">시간 초과</Tag>
-              <Tag color="processing">채점 중</Tag>
+              <ResultTag result="accepted" />
+              <ResultTag result="wrong" />
+              <ResultTag result="timeout" />
+              <ResultTag result="judging" />
             </Space>
           </Card>
         </Flex>

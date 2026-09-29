@@ -32,3 +32,15 @@ React + TypeScript + Vite + [Ant Design](https://ant.design/) 프로젝트입니
 - `components`: 특정 컴포넌트에만 적용되는 값 (예: `Steps.iconSize`)
 
 헤더의 라이트/다크 버튼으로 테마를 바꿀 수 있고, 선택한 테마는 브라우저에 저장됩니다. 다크 테마 값은 `theme.ts`의 `darkTheme`에 있습니다.
+
+## 공통 컴포넌트
+
+서비스에서 반복해서 쓰는 컴포넌트는 `src/components/`에 있습니다. `import { ... } from './components'`로 불러 씁니다.
+
+| 컴포넌트 | 하는 일 |
+| --- | --- |
+| `AsyncButton` | `onClick`이 Promise를 돌려주면 끝날 때까지 자동으로 로딩을 표시하는 버튼 |
+| `ResultTag` | 채점 결과(`accepted`, `wrong`, `timeout`, `judging`)를 색과 아이콘이 붙은 태그로 표시 |
+| `CodeBlock` | 코드를 고정폭 글꼴과 어두운 배경으로 표시 |
+
+아이콘은 [`@ant-design/icons`](https://ant.design/components/icon)에서 가져다 씁니다.
