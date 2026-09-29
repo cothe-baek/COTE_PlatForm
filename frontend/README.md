@@ -30,5 +30,3 @@ React + TypeScript + Vite + [Ant Design](https://ant.design/) 프로젝트입니
 
 - `token`: 전체 컴포넌트에 적용되는 값 (예: `colorPrimary`)
 - `components`: 특정 컴포넌트에만 적용되는 값 (예: `Steps.iconSize`)
-
-다크 모드는 운영체제 설정을 따라 자동으로 바뀝니다 (`src/Root.tsx`).
