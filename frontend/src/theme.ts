@@ -25,7 +25,7 @@ const components: ThemeConfig['components'] = {
   },
 };
 
-export const appTheme: ThemeConfig = {
+export const lightTheme: ThemeConfig = {
   algorithm: theme.defaultAlgorithm,
   token: {
     ...brandToken,
@@ -35,4 +35,30 @@ export const appTheme: ThemeConfig = {
     boxShadowTertiary: '0 4px 24px rgba(79, 91, 245, 0.06)', // 카드 그림자
   },
   components,
+};
+
+// 문제 풀이 화면 같은 남색(네이비) 계열 다크 테마.
+export const darkTheme: ThemeConfig = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    ...brandToken,
+    colorPrimary: '#6D78F7', // 어두운 배경에서 잘 보이도록 조금 밝게
+    colorInfo: '#6D78F7',
+    colorBgLayout: '#1F2D3D', // 페이지 배경
+    colorBgContainer: '#263747', // 카드, 헤더, 패널
+    colorBgElevated: '#2E4153', // 드롭다운, 모달
+    colorFillAlter: '#1E2A3B', // 코드 블록, 표 머리글 같은 한 단계 어두운 면
+    colorBorder: '#3A4D60',
+    colorBorderSecondary: '#172334', // 패널 구분선
+    colorText: '#E6EDF3',
+    colorTextSecondary: '#B2C0CC',
+    boxShadowTertiary: 'none',
+  },
+  components: {
+    ...components,
+    Button: {
+      ...components?.Button,
+      primaryShadow: 'none',
+    },
+  },
 };

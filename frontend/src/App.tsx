@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Card, Flex, Layout, Space, Steps, Tag, Typography, theme } from 'antd'
+import { Button, Card, Flex, Layout, Segmented, Space, Steps, Tag, Typography, theme } from 'antd'
 
 const { Header, Content } = Layout
 
@@ -10,16 +10,41 @@ const steps = [
   { title: '채점 결과', content: '정답 여부를 확인합니다.' },
 ]
 
-function App() {
+const sampleCode = `def solution(numbers, target):
+    answer = 0
+    return answer`
+
+type AppProps = {
+  isDark: boolean
+  onChangeTheme: (dark: boolean) => void
+}
+
+function App({ isDark, onChangeTheme }: AppProps) {
   const [current, setCurrent] = useState(0)
   const { token } = theme.useToken()
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center', background: token.colorBgContainer }}>
+      <Header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: token.colorBgContainer,
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+        }}
+      >
         <Typography.Title level={4} style={{ margin: 0, color: token.colorPrimary }}>
           COTE
         </Typography.Title>
+        <Segmented
+          value={isDark ? 'dark' : 'light'}
+          onChange={(value) => onChangeTheme(value === 'dark')}
+          options={[
+            { label: '라이트', value: 'light' },
+            { label: '다크', value: 'dark' },
+          ]}
+        />
       </Header>
       <Content style={{ padding: token.paddingLG, maxWidth: 960, width: '100%', margin: '0 auto' }}>
         <Flex vertical gap="large">
@@ -39,6 +64,22 @@ function App() {
                 </Button>
               </Space>
             </Flex>
+          </Card>
+
+          <Card variant="borderless" style={{ boxShadow: token.boxShadowTertiary }} title="코드 블록">
+            <pre
+              style={{
+                margin: 0,
+                padding: token.padding,
+                borderRadius: token.borderRadius,
+                background: token.colorFillAlter,
+                fontFamily: token.fontFamilyCode,
+                fontSize: token.fontSizeSM,
+                overflowX: 'auto',
+              }}
+            >
+              {sampleCode}
+            </pre>
           </Card>
 
           <Card variant="borderless" style={{ boxShadow: token.boxShadowTertiary }} title="채점 결과 태그">

@@ -30,3 +30,5 @@ React + TypeScript + Vite + [Ant Design](https://ant.design/) 프로젝트입니
 
 - `token`: 전체 컴포넌트에 적용되는 값 (예: `colorPrimary`)
 - `components`: 특정 컴포넌트에만 적용되는 값 (예: `Steps.iconSize`)
+
+헤더의 라이트/다크 버튼으로 테마를 바꿀 수 있고, 선택한 테마는 브라우저에 저장됩니다. 다크 테마 값은 `theme.ts`의 `darkTheme`에 있습니다.
