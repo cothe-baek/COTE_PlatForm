@@ -37,8 +37,20 @@ export const lightTheme: ThemeConfig = {
   components,
 };
 
+// antd 기본 다크 테마는 배경이 순수 검정이라, 푸른빛이 도는 짙은 회색으로 밝혀 쓴다.
 export const darkTheme: ThemeConfig = {
   algorithm: theme.darkAlgorithm,
-  token: brandToken,
+  token: {
+    ...brandToken,
+    colorPrimary: '#6D78F7', // 어두운 배경에서 잘 보이도록 조금 밝게
+    colorInfo: '#6D78F7',
+    colorBgLayout: '#1A1D27', // 페이지 배경
+    colorBgContainer: '#232734', // 카드, 헤더
+    colorBgElevated: '#2B3040', // 드롭다운, 모달
+    colorBorder: '#3A4052',
+    colorBorderSecondary: '#2F3444',
+    colorText: '#E6E8EF',
+    boxShadowTertiary: '0 4px 24px rgba(0, 0, 0, 0.25)',
+  },
   components,
 };
