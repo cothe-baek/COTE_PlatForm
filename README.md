@@ -4,12 +4,14 @@
 
 - 기획안: [docs/PLANNING.md](docs/PLANNING.md)
 - 현재 단계: **1차(MVP)** — 회원가입/로그인, 문제 목록·상세, 코드 에디터, 채점(Python·JavaScript·C++·Java), 예제 실행, 제출 이력, 자동 오답노트, 대시보드
+- 모바일(`apps/mobile`)은 코드를 쓰지 않는다. 문제를 읽고 **풀이를 말로 설명하면 AI 코치가 문답으로 이끄는** 흐름만 제공한다.
 
 ## 구조
 
 ```
 apps/
   web/     Next.js 15 + Tailwind + Monaco     (포트 3000)
+  mobile/  Expo(React Native) 말로 풀기 앱     (npm 으로 별도 관리)
   api/     NestJS REST API                    (포트 4000)
   judge/   BullMQ 채점 워커 (local | docker 실행기)
 packages/
@@ -73,6 +75,17 @@ Compose의 워커는 `JUDGE_EXECUTOR=docker`로 동작해 언어별 이미지에
 | GET | `/review`, `/review/due`, `/review/:id` | 오답노트 목록, 오늘 복습, 상세 |
 | PATCH | `/review/:id` | 메모 저장 |
 | GET | `/dashboard` | 요약 통계 |
+| GET | `/coach/meta`, `/coach/sessions`, `/coach/sessions/:problemId` | 코치 단계·인사말, 내 코치 세션 목록·상세 (모바일) |
+| POST | `/coach/sessions/:problemId/messages` | 말로 설명한 내용을 보내고 코치 답변 받기 |
+| DELETE | `/coach/sessions/:problemId` | 코치 세션 초기화 |
+
+## 모바일 (말로 풀기)
+
+```bash
+cd apps/mobile && npm install && npx expo start
+```
+
+자세한 내용은 [apps/mobile/README.md](apps/mobile/README.md). 코치는 API 의 `ANTHROPIC_API_KEY` 가 설정돼 있으면 Claude(`COACH_MODEL`, 기본 `claude-opus-5-5`)가, 없으면 정해진 순서로 답하는 목 코치가 동작한다.
 
 ## 테스트
 
@@ -81,4 +94,5 @@ python3 problems/check.py          # 문제 테스트케이스 검증
 pnpm --filter @cote/judge test     # 실행기 판정(AC/WA/TLE/RE/CE) 검증, DB 불필요
 pnpm --filter @cote/api typecheck
 pnpm --filter @cote/web build
+cd apps/mobile && npm run typecheck
 ```

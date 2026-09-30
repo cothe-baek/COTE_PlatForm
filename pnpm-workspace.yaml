@@ -1,3 +1,6 @@
 packages:
-  - "apps/*"
+  - "apps/api"
+  - "apps/judge"
+  - "apps/web"
   - "packages/*"
+# apps/mobile 은 Expo 프로젝트라 npm 으로 따로 관리한다 (apps/mobile/README.md 참고)
