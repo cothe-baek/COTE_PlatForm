@@ -45,6 +45,10 @@ docker compose exec api sh -c "cd ../../packages/db && pnpm migrate && pnpm seed
 
 Compose의 워커는 `JUDGE_EXECUTOR=docker`로 동작해 언어별 이미지에서 네트워크 차단·메모리/CPU/PID 제한·읽기 전용 파일시스템으로 격리 실행한다. 처음 채점 시 이미지(`python:3.11-alpine`, `node:22-alpine`, `gcc:13`, `eclipse-temurin:21-jdk-alpine`)를 내려받는다.
 
+## 디자인
+
+색, 글꼴, 라운드, 그림자 같은 디자인 토큰은 `apps/web/app/globals.css` 상단의 CSS 변수에 모여 있다(라이트/네이비 다크 두 벌). `dev` 브랜치 `frontend/src/theme.ts`의 Ant Design 토큰을 옮긴 것이며, Tailwind 유틸리티(`bg-surface`, `text-primary`, `shadow-card` 등)로 노출된다. 테마는 헤더의 라이트/다크 토글로 바꾸고 브라우저에 저장된다. 공용 UI 프리미티브는 `apps/web/components/ui.tsx`, 태그류는 `components/badges.tsx`, 에디터 색은 `components/monaco-setup.ts`에 있다.
+
 ## 문제 추가
 
 `problems/<slug>/` 에 다음을 둔다.

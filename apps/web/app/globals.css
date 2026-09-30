@@ -1,27 +1,174 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+@import "@fontsource-variable/jetbrains-mono";
 
+/* data-theme 로 다크 모드를 전환한다 (시스템 설정은 ThemeProvider 가 초기값으로만 사용) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---- 디자인 토큰 (frontend/src/theme.ts 의 antd 토큰을 CSS 변수로 옮김) ---- */
 :root {
-  --bg: #f8fafc;
-  --fg: #0f172a;
+  --bg: #f6f7fb; /* 페이지 배경: 아주 옅은 회청색 */
+  --surface: #ffffff; /* 카드, 헤더, 패널 */
+  --elevated: #ffffff; /* 드롭다운, 팝오버 */
+  --fill: #f3f4f9; /* 코드 블록, 표 머리글처럼 한 단계 어두운 면 */
+  --border: #e3e6f0;
+  --border-soft: #eceef5;
+  --fg: #111827;
+  --fg-2: #6b7280;
+  --fg-3: #9ca3af;
+
+  --primary: #4f5bf5; /* 브랜드 인디고 */
+  --primary-hover: #3f4be0;
+  --primary-fg: #ffffff;
+  --primary-soft: rgba(79, 91, 245, 0.1);
+  --success: #16a34a;
+  --success-soft: #ecfdf3;
+  --error: #dc2626;
+  --error-soft: #fef2f2;
+  --warning: #d97706;
+  --warning-soft: #fffbeb;
+  --info: #4f5bf5;
+  --info-soft: rgba(79, 91, 245, 0.1);
+
+  --shadow-card: 0 4px 24px rgba(79, 91, 245, 0.06);
+  --shadow-primary: 0 6px 16px rgba(79, 91, 245, 0.28);
+
+  /* 난이도 태그 (antd green / blue / gold / volcano / magenta filled) */
+  --lv1-bg: #f0fbe6; --lv1-fg: #3f8600;
+  --lv2-bg: #e6f0ff; --lv2-fg: #0958d9;
+  --lv3-bg: #fff8dc; --lv3-fg: #b8860b;
+  --lv4-bg: #ffefe6; --lv4-fg: #d4380d;
+  --lv5-bg: #ffe9f3; --lv5-fg: #c41d7f;
+
+  color-scheme: light;
 }
 
+:root[data-theme="dark"] {
+  --bg: #1f2d3d; /* 네이비 */
+  --surface: #263747;
+  --elevated: #2e4153;
+  --fill: #1e2a3b;
+  --border: #3a4d60;
+  --border-soft: #172334;
+  --fg: #e6edf3;
+  --fg-2: #b2c0cc;
+  --fg-3: #7d8b99;
+
+  --primary: #6d78f7;
+  --primary-hover: #8690f9;
+  --primary-fg: #ffffff;
+  --primary-soft: rgba(109, 120, 247, 0.18);
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --error: #f87171;
+  --error-soft: rgba(248, 113, 113, 0.14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+  --info: #6d78f7;
+  --info-soft: rgba(109, 120, 247, 0.18);
+
+  --shadow-card: none;
+  --shadow-primary: none;
+
+  --lv1-bg: rgba(163, 230, 53, 0.16); --lv1-fg: #bef264;
+  --lv2-bg: rgba(96, 165, 250, 0.18); --lv2-fg: #93c5fd;
+  --lv3-bg: rgba(250, 204, 21, 0.16); --lv3-fg: #fde047;
+  --lv4-bg: rgba(251, 146, 60, 0.18); --lv4-fg: #fdba74;
+  --lv5-bg: rgba(244, 114, 182, 0.18); --lv5-fg: #f9a8d4;
+
+  color-scheme: dark;
+}
+
+/* Tailwind 유틸리티로 노출: bg-surface, text-fg-2, border-border, text-primary, shadow-card ... */
+@theme inline {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", D2Coding, Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-fill: var(--fill);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-card: var(--shadow-card);
+  --shadow-primary: var(--shadow-primary);
+}
+
+html {
+  font-family: var(--font-sans);
+}
 body {
   background: var(--bg);
   color: var(--fg);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* 문제 본문 마크다운 */
 .prose-problem h2 {
-  @apply mt-6 mb-2 text-lg font-semibold;
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.prose-problem h2:first-child {
+  margin-top: 0;
 }
 .prose-problem p {
-  @apply my-2 leading-7;
+  margin: 0.4rem 0;
+  line-height: 1.75;
 }
 .prose-problem code {
-  @apply rounded bg-slate-100 px-1 py-0.5 text-[0.9em];
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  background: var(--fill);
 }
 .prose-problem pre {
-  @apply my-2 overflow-x-auto rounded bg-slate-100 p-3 text-sm;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--fill);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+.prose-problem pre code {
+  padding: 0;
+  background: none;
 }
 .prose-problem ul {
-  @apply my-2 list-disc pl-6;
+  margin: 0.4rem 0;
+  padding-left: 1.4rem;
+  list-style: disc;
+}
+
+/* 표시용 코드 블록 */
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-radius: var(--radius-md);
+  background: var(--fill);
+  padding: 0.6rem 0.75rem;
 }

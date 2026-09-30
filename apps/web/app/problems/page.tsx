@@ -1,11 +1,36 @@
 'use client';
 
+import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-import { DifficultyBadge, StatusDot, TagChip } from '@/components/badges';
+import { LevelTag, StatusLabel, TagChip } from '@/components/badges';
+import { Button, Card, Empty, Input, Loading, PageTitle, Select } from '@/components/ui';
 import { api, tagLabel, type Paged, type ProblemSummary } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+
+function ProblemCard({ p }: { p: ProblemSummary }) {
+  const rate = p.submitCount ? Math.round((p.acCount / p.submitCount) * 100) : null;
+  return (
+    <Link href={`/problems/${p.id}`} className="block h-full">
+      <Card className="flex h-full flex-col gap-2.5 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10">
+        <div className="flex items-center justify-between">
+          <LevelTag level={p.difficulty} />
+          {p.status !== 'unsolved' && <StatusLabel status={p.status} />}
+        </div>
+        <h3 className="text-base font-bold leading-snug">{p.title}</h3>
+        <div className="flex flex-wrap gap-1">
+          {p.tags.map((t) => (
+            <TagChip key={t} tag={t} label={tagLabel(t)} />
+          ))}
+        </div>
+        <p className="mt-auto pt-1 text-xs text-fg-2">
+          완료한 사람 {p.solvedUserCount.toLocaleString()}명 · 정답률 {rate === null ? '-' : `${rate}%`}
+        </p>
+      </Card>
+    </Link>
+  );
+}
 
 function ProblemsInner() {
   const params = useSearchParams();
@@ -43,102 +68,60 @@ function ProblemsInner() {
     router.push(`/problems?${next}`);
   }
 
-  const select = 'rounded border border-slate-300 bg-white px-2 py-1.5 text-sm';
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">문제</h1>
+    <div className="space-y-5">
+      <PageTitle title="문제" subtitle="풀고 싶은 문제를 골라 보세요." />
       <div className="flex flex-wrap items-center gap-2">
-        <select value={tag} onChange={(e) => setParam('tag', e.target.value)} className={select}>
+        <Select value={tag} onChange={(e) => setParam('tag', e.target.value)}>
           <option value="">모든 유형</option>
           {tags.map((t) => (
             <option key={t.tag} value={t.tag}>
               {tagLabel(t.tag)} ({t.count})
             </option>
           ))}
-        </select>
-        <select value={difficulty} onChange={(e) => setParam('difficulty', e.target.value)} className={select}>
+        </Select>
+        <Select value={difficulty} onChange={(e) => setParam('difficulty', e.target.value)}>
           <option value="">모든 난이도</option>
           {[1, 2, 3, 4, 5].map((d) => (
             <option key={d} value={d}>
               Lv.{d}
             </option>
           ))}
-        </select>
+        </Select>
         {user && (
-          <select value={status} onChange={(e) => setParam('status', e.target.value)} className={select}>
+          <Select value={status} onChange={(e) => setParam('status', e.target.value)}>
             <option value="">모든 상태</option>
             <option value="unsolved">미풀이</option>
-            <option value="tried">시도 중</option>
+            <option value="tried">시도함</option>
             <option value="solved">해결</option>
-          </select>
+          </Select>
         )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setParam('q', q);
           }}
-          className="flex gap-1"
+          className="flex gap-1.5"
         >
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="제목 검색" className={select} />
-          <button className="rounded bg-slate-900 px-3 py-1.5 text-sm text-white">검색</button>
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="제목 검색" />
+          <Button variant="primary" className="px-3" aria-label="검색">
+            <Search size={16} />
+          </Button>
         </form>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-left text-xs text-slate-500">
-            <tr>
-              <th className="px-4 py-2 font-medium">상태</th>
-              <th className="px-4 py-2 font-medium">제목</th>
-              <th className="px-4 py-2 font-medium">유형</th>
-              <th className="px-4 py-2 font-medium">난이도</th>
-              <th className="px-4 py-2 text-right font-medium">정답률</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {!data ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
-                  불러오는 중…
-                </td>
-              </tr>
-            ) : data.items.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
-                  조건에 맞는 문제가 없습니다
-                </td>
-              </tr>
-            ) : (
-              data.items.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-2.5">
-                    <StatusDot status={p.status} />
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <Link href={`/problems/${p.id}`} className="font-medium hover:underline">
-                      {p.title}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <div className="flex flex-wrap gap-1">
-                      {p.tags.map((t) => (
-                        <TagChip key={t} tag={t} label={tagLabel(t)} />
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <DifficultyBadge level={p.difficulty} />
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-slate-500">
-                    {p.submitCount ? `${Math.round((p.acCount / p.submitCount) * 100)}%` : '-'}
-                    <span className="ml-1 text-xs text-slate-400">({p.submitCount})</span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {!data ? (
+        <Loading />
+      ) : data.items.length === 0 ? (
+        <Empty>조건에 맞는 문제가 없습니다</Empty>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {data.items.map((p) => (
+            <ProblemCard key={p.id} p={p} />
+          ))}
+        </div>
+      )}
+
       {data && data.total > data.pageSize && (
         <div className="flex justify-center gap-2 text-sm">
           {Array.from({ length: Math.ceil(data.total / data.pageSize) }, (_, i) => i + 1).map((n) => (
@@ -149,7 +132,7 @@ function ProblemsInner() {
                 next.set('page', String(n));
                 router.push(`/problems?${next}`);
               }}
-              className={`rounded px-3 py-1 ${String(n) === page ? 'bg-slate-900 text-white' : 'border border-slate-300'}`}
+              className={`rounded-md px-3 py-1 ${String(n) === page ? 'bg-primary text-primary-fg' : 'border border-border'}`}
             >
               {n}
             </button>
@@ -162,7 +145,7 @@ function ProblemsInner() {
 
 export default function ProblemsPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-slate-500">불러오는 중…</p>}>
+    <Suspense fallback={<Loading />}>
       <ProblemsInner />
     </Suspense>
   );

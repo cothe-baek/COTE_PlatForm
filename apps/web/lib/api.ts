@@ -70,6 +70,7 @@ export interface ProblemSummary {
   tags: string[];
   submitCount: number;
   acCount: number;
+  solvedUserCount: number;
   status: SolveStatus;
 }
 export interface ProblemDetail {

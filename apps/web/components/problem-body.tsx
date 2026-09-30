@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 
 export function ProblemBody({ markdown }: { markdown: string }) {
   return (
-    <div className="prose-problem text-sm text-slate-800">
+    <div className="prose-problem text-sm text-fg">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
     </div>
   );

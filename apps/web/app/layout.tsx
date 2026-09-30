@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Nav } from '@/components/nav';
 import { AuthProvider } from '@/lib/auth';
+import { THEME_INIT_SCRIPT, ThemeProvider } from '@/lib/theme';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,12 +12,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-screen antialiased">
-        <AuthProvider>
-          <Nav />
-          <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Nav />
+            <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">{children}</main>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

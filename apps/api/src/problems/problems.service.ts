@@ -55,13 +55,22 @@ export class ProblemsService {
       }),
     ]);
 
-    // 정답률 계산용 AC 수 (문제별 groupBy)
-    const acCounts = await this.prisma.submission.groupBy({
-      by: ['problemId'],
-      where: { kind: 'SUBMIT', status: 'AC', problemId: { in: items.map((p) => p.id) } },
-      _count: { _all: true },
-    });
+    // 정답률(AC 제출 수)과 완료한 사람 수(AC 받은 사용자 수)
+    const ids = items.map((p) => p.id);
+    const [acCounts, solvers] = await Promise.all([
+      this.prisma.submission.groupBy({
+        by: ['problemId'],
+        where: { kind: 'SUBMIT', status: 'AC', problemId: { in: ids } },
+        _count: { _all: true },
+      }),
+      this.prisma.submission.groupBy({
+        by: ['problemId', 'userId'],
+        where: { kind: 'SUBMIT', status: 'AC', problemId: { in: ids } },
+      }),
+    ]);
     const acMap = new Map(acCounts.map((r) => [r.problemId, r._count._all]));
+    const solverMap = new Map<number, number>();
+    for (const r of solvers) solverMap.set(r.problemId, (solverMap.get(r.problemId) ?? 0) + 1);
 
     return {
       page,
@@ -75,6 +84,7 @@ export class ProblemsService {
         tags: p.tags.map((t) => t.tag),
         submitCount: p._count.submissions,
         acCount: acMap.get(p.id) ?? 0,
+        solvedUserCount: solverMap.get(p.id) ?? 0,
         status: statusMap.get(p.id) ?? 'unsolved',
       })),
     };

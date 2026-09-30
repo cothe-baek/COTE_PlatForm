@@ -2,10 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import type { Language } from '@/lib/api';
+import { useTheme } from '@/lib/theme';
 
 const Monaco = dynamic(() => import('./monaco-setup').then(() => import('@monaco-editor/react')), {
   ssr: false,
-  loading: () => <div className="h-full bg-slate-50 p-4 text-sm text-slate-400">에디터 로딩 중…</div>,
+  loading: () => <div className="h-full bg-surface p-4 text-sm text-fg-3">에디터 로딩 중…</div>,
 });
 
 const MONACO_LANG: Record<Language, string> = { PYTHON: 'python', JAVASCRIPT: 'javascript', CPP: 'cpp', JAVA: 'java' };
@@ -18,14 +19,26 @@ export const TEMPLATES: Record<Language, string> = {
 };
 
 export function CodeEditor({ language, value, onChange }: { language: Language; value: string; onChange: (v: string) => void }) {
+  const { theme } = useTheme();
   return (
     <Monaco
       height="100%"
       language={MONACO_LANG[language]}
       value={value}
       onChange={(v) => onChange(v ?? '')}
-      theme="vs-dark"
-      options={{ fontSize: 14, minimap: { enabled: false }, scrollBeyondLastLine: false, tabSize: 4, automaticLayout: true }}
+      theme={theme === 'dark' ? 'cote-dark' : 'cote-light'}
+      options={{
+        fontSize: 14,
+        fontFamily: "'JetBrains Mono Variable', 'JetBrains Mono', D2Coding, Consolas, monospace",
+        fontLigatures: true,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        tabSize: 4,
+        automaticLayout: true,
+        padding: { top: 12, bottom: 12 },
+        lineNumbersMinChars: 3,
+        renderLineHighlight: 'line',
+      }}
     />
   );
 }

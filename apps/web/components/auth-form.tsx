@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { useAuth } from '@/lib/auth';
+import { Button, Card, Input } from './ui';
 
 export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   const { login, signup } = useAuth();
@@ -29,38 +30,46 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     }
   }
 
-  const field = 'mt-1 w-full rounded border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none';
   return (
-    <div className="mx-auto mt-10 max-w-sm rounded-lg border border-slate-200 bg-white p-6">
-      <h1 className="text-xl font-semibold">{mode === 'login' ? '로그인' : '회원가입'}</h1>
-      <form onSubmit={onSubmit} className="mt-4 space-y-3">
-        <label className="block text-sm">
-          이메일
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
-        </label>
-        {mode === 'signup' && (
-          <label className="block text-sm">
-            닉네임
-            <input required minLength={2} maxLength={20} value={nickname} onChange={(e) => setNickname(e.target.value)} className={field} />
+    <div className="mx-auto mt-12 max-w-sm">
+      <Card className="p-7">
+        <h1 className="text-xl font-bold">{mode === 'login' ? '로그인' : '회원가입'}</h1>
+        <p className="mt-1 text-sm text-fg-2">{mode === 'login' ? '다시 만나서 반가워요.' : '풀고, 틀리고, 다시 풀어 봅시다.'}</p>
+        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <label className="block text-sm font-medium">
+            이메일
+            <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5 w-full" />
           </label>
-        )}
-        <label className="block text-sm">
-          비밀번호
-          <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className={field} />
-        </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button disabled={busy} className="w-full rounded bg-slate-900 py-2 text-sm text-white hover:bg-slate-700 disabled:opacity-50">
-          {busy ? '처리 중…' : mode === 'login' ? '로그인' : '가입하기'}
-        </button>
-      </form>
-      <p className="mt-4 text-center text-sm text-slate-500">
+          {mode === 'signup' && (
+            <label className="block text-sm font-medium">
+              닉네임
+              <Input required minLength={2} maxLength={20} value={nickname} onChange={(e) => setNickname(e.target.value)} className="mt-1.5 w-full" />
+            </label>
+          )}
+          <label className="block text-sm font-medium">
+            비밀번호
+            <Input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5 w-full" />
+          </label>
+          {error && <p className="text-sm text-error">{error}</p>}
+          <Button variant="primary" disabled={busy} className="w-full">
+            {busy ? '처리 중…' : mode === 'login' ? '로그인' : '가입하기'}
+          </Button>
+        </form>
+      </Card>
+      <p className="mt-4 text-center text-sm text-fg-2">
         {mode === 'login' ? (
           <>
-            계정이 없나요? <Link href="/auth/signup" className="underline">회원가입</Link>
+            계정이 없나요?{' '}
+            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
+              회원가입
+            </Link>
           </>
         ) : (
           <>
-            이미 계정이 있나요? <Link href="/auth/login" className="underline">로그인</Link>
+            이미 계정이 있나요?{' '}
+            <Link href="/auth/login" className="font-medium text-primary hover:underline">
+              로그인
+            </Link>
           </>
         )}
       </p>
