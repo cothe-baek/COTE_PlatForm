@@ -85,7 +85,7 @@ Compose의 워커는 `JUDGE_EXECUTOR=docker`로 동작해 언어별 이미지에
 cd apps/mobile && npm install && npx expo start
 ```
 
-자세한 내용은 [apps/mobile/README.md](apps/mobile/README.md). 코치는 API 의 `ANTHROPIC_API_KEY` 가 설정돼 있으면 Claude(`COACH_MODEL`, 기본 `claude-opus-5-5`)가, 없으면 정해진 순서로 답하는 목 코치가 동작한다.
+자세한 내용은 [apps/mobile/README.md](apps/mobile/README.md). 코치는 API 의 `ANTHROPIC_API_KEY` 가 설정돼 있으면 Claude(`COACH_MODEL`, 기본 `claude-sonnet-5-5`)가, 없으면 정해진 순서로 답하는 목 코치가 동작한다.
 
 ## 테스트
 

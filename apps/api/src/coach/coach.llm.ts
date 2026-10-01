@@ -35,7 +35,7 @@ export interface CoachBackend {
 export class ClaudeCoach implements CoachBackend {
   readonly name = 'claude';
   private readonly client = new Anthropic();
-  private readonly model = process.env.COACH_MODEL ?? 'claude-opus-5-5';
+  private readonly model = process.env.COACH_MODEL ?? 'claude-sonnet-5-5';
   private readonly logger = new Logger(ClaudeCoach.name);
 
   async ask(problem: CoachProblem, history: ChatMessage[], progress: number): Promise<CoachReply> {
