@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 네이티브 프로젝트는 prebuild 로 생성한다 (CNG)
+android/
+ios/
